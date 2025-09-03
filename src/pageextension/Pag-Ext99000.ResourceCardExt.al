@@ -33,8 +33,10 @@ pageextension 99000 "Resource Card Ext" extends "Resource Card"
             action("Set Web Password")
             {
                 Caption = 'Set Web Password';
-                Image = Password;
+                Image = SelectField;
                 Enabled = Rec."Web Access Enabled";
+                ApplicationArea = All;
+
 
                 trigger OnAction()
                 var

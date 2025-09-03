@@ -2,7 +2,7 @@ page 99004 "Time Entries API"
 {
     PageType = API;
     APIPublisher = 'timetracker';
-    APIGroup = 'v1';
+    APIGroup = 'atp';
     APIVersion = 'v1.0';
     EntityName = 'timeEntry';
     EntitySetName = 'timeEntries';
