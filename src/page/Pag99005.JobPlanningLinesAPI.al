@@ -1,8 +1,8 @@
-page 99005 "Job Planning Lines API"
+page 99005 "ATP Job Planning Lines API"
 {
     APIVersion = 'v1.0';
-    APIPublisher = 'timetracker';
-    APIGroup = 'atp';
+    APIGroup = 'timetracker';
+    APIPublisher = 'atp';
     PageType = API;
     Caption = 'Job Planning Lines';
     DelayedInsert = true;
@@ -122,7 +122,7 @@ page 99005 "Job Planning Lines API"
                 }
 
                 // Navigation to related Job
-                part(job; "Jobs API")
+                part(job; "ATP Jobs API")
                 {
                     Caption = 'Job';
                     EntityName = 'job';

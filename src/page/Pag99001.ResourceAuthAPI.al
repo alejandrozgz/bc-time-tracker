@@ -1,8 +1,8 @@
-page 99001 "Resource Auth API"
+page 99001 "ATP Resource Auth API"
 {
     PageType = API;
-    APIPublisher = 'timetracker';
-    APIGroup = 'atp';
+    APIGroup = 'timetracker';
+    APIPublisher = 'atp';
     APIVersion = 'v1.0';
     EntityName = 'resourceAuth';
     EntitySetName = 'resourceAuth';

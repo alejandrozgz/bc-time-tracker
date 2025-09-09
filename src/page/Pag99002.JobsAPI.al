@@ -1,8 +1,8 @@
-page 99002 "Jobs API"
+page 99002 "ATP Jobs API"
 {
     PageType = API;
-    APIPublisher = 'timetracker';
-    APIGroup = 'atp';
+    APIGroup = 'timetracker';
+    APIPublisher = 'atp';
     APIVersion = 'v1.0';
     EntityName = 'job';
     EntitySetName = 'jobs';
