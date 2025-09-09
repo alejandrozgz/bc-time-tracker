@@ -101,28 +101,6 @@ page 99006 "ATP Job Journal Line API"
         JobJournalLine: Record "Job Journal Line";
         LineNo: Integer;
     begin
-        // Ensure Journal Template exists
-        if not JobJournalTemplate.Get(Rec."Journal Template Name") then begin
-            JobJournalTemplate.Init();
-            JobJournalTemplate.Name := Rec."Journal Template Name";
-            JobJournalTemplate.Description := 'Time Tracker Template';
-            JobJournalTemplate."Page ID" := Page::"Job Journal";
-            JobJournalTemplate."Posting Report ID" := Report::"Job Register";
-            JobJournalTemplate."Source Code" := 'JOBJNL';
-            JobJournalTemplate."Reason Code" := '';
-            JobJournalTemplate."Recurring" := false;
-            JobJournalTemplate.Insert(true);
-        end;
-
-        // Ensure Journal Batch exists
-        if not JobJournalBatch.Get(Rec."Journal Template Name", Rec."Journal Batch Name") then begin
-            JobJournalBatch.Init();
-            JobJournalBatch."Journal Template Name" := Rec."Journal Template Name";
-            JobJournalBatch.Name := Rec."Journal Batch Name";
-            JobJournalBatch.Description := 'Web App Batch';
-            JobJournalBatch.Insert();
-        end;
-
         // Auto-assign Line No if not provided
         if Rec."Line No." = 0 then begin
             JobJournalLine.SetRange("Journal Template Name", Rec."Journal Template Name");
