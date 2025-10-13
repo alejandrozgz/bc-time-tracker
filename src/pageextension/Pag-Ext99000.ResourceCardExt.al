@@ -47,5 +47,12 @@ pageextension 99000 "Resource Card Ext" extends "Resource Card"
                 end;
             }
         }
+        addafter(CreateTimeSheets_Promoted)
+        {
+            actionref("Set Web Password_Promoted"; "Set Web Password")
+            {
+            }
+        }
     }
+
 }
