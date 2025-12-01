@@ -2,7 +2,7 @@
   "id": "62781104-9c95-4b2e-b547-cdfb581ede36",
   "name": "bc-time-tracker",
   "publisher": "ATP Dynamics Solution",
-  "version": "0.0.0.1",
+  "version": "0.0.0.2",
   "brief": "",
   "description": "",
   "privacyStatement": "",
@@ -21,9 +21,9 @@
     }
   ],
   "resourceExposurePolicy": {
-    "allowDebugging": true,
-    "allowDownloadingSource": true,
-    "includeSourceInSymbolFile": true
+    "allowDebugging": false,
+    "allowDownloadingSource": false,
+    "includeSourceInSymbolFile": false
   },
   "runtime": "15.0",
   "features": [

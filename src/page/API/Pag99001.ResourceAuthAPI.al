@@ -31,6 +31,11 @@ page 99001 "ATP Resource Auth API"
                 {
                     Caption = 'Web Access Enabled';
                 }
+                field(jobJournalBatch; Rec."Job Journal Batch")
+                {
+                    Caption = 'Job Journal Batch';
+                    Editable = false;
+                }
             }
         }
     }
@@ -38,5 +43,16 @@ page 99001 "ATP Resource Auth API"
     trigger OnOpenPage()
     begin
         Rec.SetRange("Web Access Enabled", true);
+    end;
+
+    procedure UpdateLastLogin(ResourceNo: Code[20])
+    var
+        Resource: Record Resource;
+    begin
+        if Resource.Get(ResourceNo) then begin
+            Resource."Last Web Login" := CurrentDateTime;
+            Resource.Modify(true);
+            Commit();
+        end;
     end;
 }

@@ -8,6 +8,7 @@ page 99002 "ATP Jobs API"
     EntitySetName = 'jobs';
     SourceTable = Job;
     DelayedInsert = true;
+    SourceTableView = where(Status = const(Open));
 
     layout
     {

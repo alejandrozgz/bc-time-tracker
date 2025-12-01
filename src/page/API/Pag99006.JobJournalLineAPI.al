@@ -50,6 +50,16 @@ page 99006 "ATP Job Journal Line API"
                 field(no; Rec."No.")
                 {
                     Caption = 'No';
+
+                    trigger OnValidate()
+                    var
+                        Resource: Record Resource;
+                    begin
+                        if Rec.Type = Rec.Type::Resource then begin
+                            Resource.Get(Rec."No.");
+                            Rec.Validate("Unit of Measure Code", Resource."Hours Unit of Measure Code");
+                        end;
+                    end;
                 }
                 field(postingDate; Rec."Posting Date")
                 {
@@ -89,6 +99,14 @@ page 99006 "ATP Job Journal Line API"
                 {
                     Caption = 'Last Modified Date Time';
                     Editable = false;
+                }
+                field(approvalStatus; Rec."Approval Status")
+                {
+                    Caption = 'Approval Status';
+                }
+                field(comments; Rec.Comments)
+                {
+                    Caption = 'Comments';
                 }
             }
         }

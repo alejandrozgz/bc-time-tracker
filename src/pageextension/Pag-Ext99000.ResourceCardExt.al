@@ -6,7 +6,7 @@ pageextension 99000 "Resource Card Ext" extends "Resource Card"
         {
             group("Web Access")
             {
-                Caption = 'Web Access';
+                Caption = 'Time Tracker';
 
                 field("Web Access Enabled"; Rec."Web Access Enabled")
                 {
@@ -16,6 +16,14 @@ pageextension 99000 "Resource Card Ext" extends "Resource Card"
                 {
                     ApplicationArea = All;
                     Enabled = Rec."Web Access Enabled";
+                }
+                field("Job Journal Batch"; Rec."Job Journal Batch")
+                {
+                    ApplicationArea = All;
+                }
+                field("Hours Unit of Measure Code"; Rec."Hours Unit of Measure Code")
+                {
+                    ApplicationArea = All;
                 }
                 field("Last Web Login"; Rec."Last Web Login")
                 {
