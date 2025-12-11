@@ -1,4 +1,4 @@
-pageextension 99001 "AP TT Job Journal Ext" extends "Job Journal"
+pageextension 99001 "Job Journal Ext" extends "Job Journal"
 {
     layout
     {

@@ -1,4 +1,4 @@
-tableextension 99001 "ATP TT Job Journal Line ext" extends "Job Journal Line"
+tableextension 99001 "Job Journal Line Ext" extends "Job Journal Line"
 {
     fields
     {

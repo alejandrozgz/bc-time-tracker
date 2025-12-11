@@ -1,4 +1,4 @@
-tableextension 99000 "ATP TT Resource Ext" extends Resource
+tableextension 99000 "Resource Ext" extends Resource
 {
     fields
     {
