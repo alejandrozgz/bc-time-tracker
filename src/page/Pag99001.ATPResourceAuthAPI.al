@@ -36,6 +36,11 @@ page 99001 "ATP Resource Auth API"
                     Caption = 'Job Journal Batch';
                     Editable = false;
                 }
+                field(timeEntryMode; Rec."ATT TT Time Entry Mode")
+                {
+                    Caption = 'Time Entry Mode';
+                    Editable = false;
+                }
             }
         }
     }

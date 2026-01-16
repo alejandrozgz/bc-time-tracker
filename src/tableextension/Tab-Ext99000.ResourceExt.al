@@ -42,5 +42,9 @@ tableextension 99000 "Resource Ext" extends Resource
             Caption = 'Hours Unit of Measure';
             TableRelation = "Unit of Measure".Code;
         }
+        field(99106; "ATT TT Time Entry Mode"; Enum "ATT TT Time Entry Mode")
+        {
+            Caption = 'Time Entry Mode';
+        }
     }
 }

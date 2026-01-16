@@ -160,4 +160,73 @@ codeunit 99002 "ATP TT Time Mgt."
         DayDetailPage.SetContext(ResourceNo, DayDate, TimeDetail);
         DayDetailPage.RunModal();
     end;
+
+    procedure BuildPeriodDetail(var TimeDetail: Record "ATP TT Time Detail" temporary; ResourceNo: Code[20]; FromDate: Date; ToDate: Date)
+    var
+        JobJournalLine: Record "Job Journal Line";
+        JobLedgerEntry: Record "Job Ledger Entry";
+        EntryNo: Integer;
+    begin
+        TimeDetail.Reset();
+        TimeDetail.DeleteAll();
+        EntryNo := 0;
+
+        // --- 1. Job Journal Line en rango ---
+        JobJournalLine.Reset();
+        JobJournalLine.SetRange(Type, JobJournalLine.Type::Resource);
+        JobJournalLine.SetRange("No.", ResourceNo);
+        JobJournalLine.SetRange("Posting Date", FromDate, ToDate);
+        // TODO: filtrar por plantilla/lote si aplica
+
+        if JobJournalLine.FindSet() then
+            repeat
+                EntryNo += 1;
+                TimeDetail.Init();
+                TimeDetail."Entry No." := EntryNo;
+                TimeDetail."Resource No." := JobJournalLine."No.";
+                TimeDetail."Date" := JobJournalLine."Posting Date";
+                TimeDetail."Job No." := JobJournalLine."Job No.";
+                TimeDetail."Job Task No." := JobJournalLine."Job Task No.";
+                TimeDetail."Description" := JobJournalLine.Description;
+                TimeDetail."Hours" := JobJournalLine."Quantity";
+                TimeDetail."Source Type" := TimeDetail."Source Type"::Journal;
+                TimeDetail."Journal Template Name" := JobJournalLine."Journal Template Name";
+                TimeDetail."Journal Batch Name" := JobJournalLine."Journal Batch Name";
+                TimeDetail."Journal Line No." := JobJournalLine."Line No.";
+                TimeDetail.Insert();
+            until JobJournalLine.Next() = 0;
+
+        // --- 2. Job Ledger Entry en rango ---
+        JobLedgerEntry.Reset();
+        JobLedgerEntry.SetRange(Type, JobLedgerEntry.Type::Resource);
+        JobLedgerEntry.SetRange("No.", ResourceNo);
+        JobLedgerEntry.SetRange("Posting Date", FromDate, ToDate);
+
+        if JobLedgerEntry.FindSet() then
+            repeat
+                EntryNo += 1;
+                TimeDetail.Init();
+                TimeDetail."Entry No." := EntryNo;
+                TimeDetail."Resource No." := JobLedgerEntry."No.";
+                TimeDetail."Date" := JobLedgerEntry."Posting Date";
+                TimeDetail."Job No." := JobLedgerEntry."Job No.";
+                TimeDetail."Job Task No." := JobLedgerEntry."Job Task No.";
+                TimeDetail."Description" := JobLedgerEntry.Description;
+                TimeDetail."Hours" := JobLedgerEntry.Quantity;
+                TimeDetail."Source Type" := TimeDetail."Source Type"::Ledger;
+                TimeDetail."Job Ledger Entry No." := JobLedgerEntry."Entry No.";
+                TimeDetail.Insert();
+            until JobLedgerEntry.Next() = 0;
+    end;
+
+    procedure OpenPeriodDetail(ResourceNo: Code[20]; FromDate: Date; ToDate: Date)
+    var
+        TimeDetail: Record "ATP TT Time Detail" temporary;
+        DayDetailPage: Page "ATP TT Time Day Detail";
+    begin
+        BuildPeriodDetail(TimeDetail, ResourceNo, FromDate, ToDate);
+        // Usamos FromDate solo como contexto, la página realmente muestra todo el buffer
+        DayDetailPage.SetContext(ResourceNo, FromDate, TimeDetail);
+        DayDetailPage.RunModal();
+    end;
 }

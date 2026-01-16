@@ -1,6 +1,6 @@
 page 99011 "ATP TT Time Day Detail"
 {
-    Caption = 'ATP Time Day Detail';
+    Caption = 'Time Day Detail';
     PageType = List;
     SourceTable = "ATP TT Time Detail";
     SourceTableTemporary = true;
@@ -16,36 +16,44 @@ page 99011 "ATP TT Time Day Detail"
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    StyleExpr = LineStyle;
                 }
                 field("Date"; Rec."Date")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    StyleExpr = LineStyle;
                 }
                 field("Job No."; Rec."Job No.")
                 {
                     ApplicationArea = All;
+                    StyleExpr = LineStyle;
                 }
                 field("Job Task No."; Rec."Job Task No.")
                 {
                     ApplicationArea = All;
+                    StyleExpr = LineStyle;
                 }
                 field("Description"; Rec."Description")
                 {
                     ApplicationArea = All;
+                    StyleExpr = LineStyle;
                 }
                 field("Hours"; Rec."Hours")
                 {
                     ApplicationArea = All;
+                    StyleExpr = LineStyle;
                 }
                 field("Source Type"; Rec."Source Type")
                 {
                     ApplicationArea = All;
                     Editable = false;
+                    StyleExpr = LineStyle;
                 }
                 field("Approval Status"; Rec."Approval Status")
                 {
                     ApplicationArea = All;
+                    StyleExpr = LineStyle;
                 }
             }
         }
@@ -55,11 +63,42 @@ page 99011 "ATP TT Time Day Detail"
     {
         area(Processing)
         {
+            action(ApproveAll)
+            {
+                Caption = 'Approve All';
+                ApplicationArea = All;
+                Image = Approve;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                trigger OnAction()
+                begin
+                    ApproveAllLines();
+                end;
+            }
+
+            action(RejectAll)
+            {
+                Caption = 'Reject All';
+                ApplicationArea = All;
+                Image = Approve;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
+                trigger OnAction()
+                begin
+                    RejectAllLines();
+                end;
+            }
+
             action(ApproveSelected)
             {
                 Caption = 'Approve Selected';
                 ApplicationArea = All;
                 Image = Approve;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
                 trigger OnAction()
                 begin
                     ApproveSelectedLines();
@@ -71,6 +110,9 @@ page 99011 "ATP TT Time Day Detail"
                 Caption = 'Reject Selected';
                 ApplicationArea = All;
                 Image = Reject;
+                Promoted = true;
+                PromotedCategory = Process;
+                PromotedIsBig = true;
                 trigger OnAction()
                 begin
                     RejectSelectedLines();
@@ -82,6 +124,12 @@ page 99011 "ATP TT Time Day Detail"
     var
         InResourceNo: Code[20];
         InDate: Date;
+        LineStyle: Text[30];
+
+    trigger OnAfterGetRecord()
+    begin
+        SetLineStyle();
+    end;
 
     procedure SetContext(ResourceNo: Code[20]; WorkDate: Date; var TempDetail: Record "ATP TT Time Detail" temporary)
     begin
@@ -91,7 +139,6 @@ page 99011 "ATP TT Time Day Detail"
         Rec.Reset();
         Rec.DeleteAll();
 
-        // Copiar el buffer recibido a Rec (temp)
         if TempDetail.FindSet() then
             repeat
                 Rec := TempDetail;
@@ -99,35 +146,99 @@ page 99011 "ATP TT Time Day Detail"
             until TempDetail.Next() = 0;
     end;
 
-    trigger OnOpenPage()
+    local procedure ApproveAllLines()
+    var
+        TimeDetail: Record "ATP TT Time Detail";
+        JobJournalLine: Record "Job Journal Line";
+        SavedFilters: Text;
     begin
-        // Opcional: si quieres recargar desde TimeMgt en lugar de recibir buffer
-        // var TimeMgt: Codeunit "ATP TT Time Mgt.";
-        // TimeMgt.BuildDayDetail(Rec, InResourceNo, InDate);
+        SavedFilters := Rec.GetView();
+        TimeDetail.Copy(Rec, true);
+        if TimeDetail.FindSet() then
+            repeat
+                if TimeDetail."Source Type" = TimeDetail."Source Type"::Journal then begin
+                    JobJournalLine.Get(TimeDetail."Journal Template Name", TimeDetail."Journal Batch Name", TimeDetail."Journal Line No.");
+                    JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Approved;
+                    JobJournalLine.Modify();
+                end;
+            until TimeDetail.Next() = 0;
+
+        Rec.SetView(SavedFilters);
+        CurrPage.Update(false);
+    end;
+
+    local procedure RejectAllLines()
+    var
+        TimeDetail: Record "ATP TT Time Detail";
+        JobJournalLine: Record "Job Journal Line";
+        SavedFilters: Text;
+    begin
+        SavedFilters := Rec.GetView();
+        TimeDetail.Copy(Rec, true);
+        if TimeDetail.FindSet() then
+            repeat
+                if TimeDetail."Source Type" = TimeDetail."Source Type"::Journal then begin
+                    JobJournalLine.Get(TimeDetail."Journal Template Name", TimeDetail."Journal Batch Name", TimeDetail."Journal Line No.");
+                    JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Rejected;
+                    JobJournalLine.Modify();
+                end;
+            until TimeDetail.Next() = 0;
+
+        Rec.SetView(SavedFilters);
+        CurrPage.Update(false);
     end;
 
     local procedure ApproveSelectedLines()
     var
-        CurrRec: Record "ATP TT Time Detail";
         JobJournalLine: Record "Job Journal Line";
+        SavedFilters: Text;
     begin
-        CurrRec.Copy(Rec);
-        if CurrRec.FindSet() then
+        SavedFilters := Rec.GetView();
+        CurrPage.SetSelectionFilter(Rec);
+        if Rec.FindSet() then
             repeat
-                if CurrRec."Source Type" = CurrRec."Source Type"::Journal then begin
-                    // TODO: localizar Job Journal Line por plantilla/lote/line no. y actualizar estado
-                    // JobJournalLine.Get(...);
-                    // JobJournalLine."<campo estado>" := <Approved>;
-                    // JobJournalLine.Modify();
+                if Rec."Source Type" = Rec."Source Type"::Journal then begin
+                    JobJournalLine.Get(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Journal Line No.");
+                    JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Approved;
+                    JobJournalLine.Modify();
                 end;
-            until CurrRec.Next() = 0;
+            until Rec.Next() = 0;
 
-        Message('Approval logic to be implemented.');
+        Rec.SetView(SavedFilters);
+        CurrPage.Update(false);
     end;
 
     local procedure RejectSelectedLines()
+    var
+        JobJournalLine: Record "Job Journal Line";
+        SavedFilters: Text;
     begin
-        // TODO: similar a ApproveSelectedLines, pero marcando como Rejected
-        Message('Rejection logic to be implemented.');
+        SavedFilters := Rec.GetView();
+        CurrPage.SetSelectionFilter(Rec);
+        if Rec.FindSet() then
+            repeat
+                if Rec."Source Type" = Rec."Source Type"::Journal then begin
+                    JobJournalLine.Get(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Journal Line No.");
+                    JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Rejected;
+                    JobJournalLine.Modify();
+                end;
+            until Rec.Next() = 0;
+
+        Rec.SetView(SavedFilters);
+        CurrPage.Update(false);
+    end;
+
+    local procedure SetLineStyle()
+    begin
+        LineStyle := 'Standard';
+
+        case Rec."Approval Status" of
+            Rec."Approval Status"::Pending:
+                LineStyle := 'Ambiguous';
+            Rec."Approval Status"::Rejected:
+                LineStyle := 'Unfavorable';
+            Rec."Approval Status"::Approved:
+                LineStyle := 'Favorable';
+        end;
     end;
 }

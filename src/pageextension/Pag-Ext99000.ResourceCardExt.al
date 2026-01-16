@@ -25,6 +25,10 @@ pageextension 99000 "Resource Card Ext" extends "Resource Card"
                 {
                     ApplicationArea = All;
                 }
+                field("ATT TT Time Entry Mode"; Rec."ATT TT Time Entry Mode")
+                {
+                    ApplicationArea = All;
+                }
                 field("Last Web Login"; Rec."Last Web Login")
                 {
                     ApplicationArea = All;
