@@ -1,6 +1,6 @@
 table 99001 "ATP TT Time Detail"
 {
-    Caption = 'ATP Time Detail';
+    Caption = 'Time Tracker Detail';
     DataClassification = ToBeClassified;
 
     fields

@@ -1,6 +1,6 @@
-page 99011 "ATP TT Time Day Detail"
+page 99011 "ATP TT Day Detail"
 {
-    Caption = 'Time Day Detail';
+    Caption = 'Time Tracker Day Detail';
     PageType = List;
     SourceTable = "ATP TT Time Detail";
     SourceTableTemporary = true;
@@ -123,7 +123,8 @@ page 99011 "ATP TT Time Day Detail"
 
     var
         InResourceNo: Code[20];
-        InDate: Date;
+        InFromDate: Date;
+        InToDate: Date;
         LineStyle: Text[30];
 
     trigger OnAfterGetRecord()
@@ -131,10 +132,11 @@ page 99011 "ATP TT Time Day Detail"
         SetLineStyle();
     end;
 
-    procedure SetContext(ResourceNo: Code[20]; WorkDate: Date; var TempDetail: Record "ATP TT Time Detail" temporary)
+    procedure SetContext(ResourceNo: Code[20]; FromDate: Date; ToDate: Date; var TempDetail: Record "ATP TT Time Detail" temporary)
     begin
         InResourceNo := ResourceNo;
-        InDate := WorkDate;
+        InFromDate := FromDate;
+        InToDate := ToDate;
 
         Rec.Reset();
         Rec.DeleteAll();
@@ -148,41 +150,39 @@ page 99011 "ATP TT Time Day Detail"
 
     local procedure ApproveAllLines()
     var
-        TimeDetail: Record "ATP TT Time Detail";
         JobJournalLine: Record "Job Journal Line";
         SavedFilters: Text;
     begin
-        SavedFilters := Rec.GetView();
-        TimeDetail.Copy(Rec, true);
-        if TimeDetail.FindSet() then
+        if Rec.FindSet() then
             repeat
-                if TimeDetail."Source Type" = TimeDetail."Source Type"::Journal then begin
-                    JobJournalLine.Get(TimeDetail."Journal Template Name", TimeDetail."Journal Batch Name", TimeDetail."Journal Line No.");
+                if Rec."Source Type" = Rec."Source Type"::Journal then begin
+                    JobJournalLine.Get(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Journal Line No.");
                     JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Approved;
                     JobJournalLine.Modify();
+                    Rec."Approval Status" := Rec."Approval Status"::Approved;
+                    Rec.Modify();
                 end;
-            until TimeDetail.Next() = 0;
-
-        Rec.SetView(SavedFilters);
+            until Rec.Next() = 0;
         CurrPage.Update(false);
     end;
 
     local procedure RejectAllLines()
     var
-        TimeDetail: Record "ATP TT Time Detail";
         JobJournalLine: Record "Job Journal Line";
         SavedFilters: Text;
     begin
         SavedFilters := Rec.GetView();
-        TimeDetail.Copy(Rec, true);
-        if TimeDetail.FindSet() then
+        Rec.Copy(Rec, true);
+        if Rec.FindSet() then
             repeat
-                if TimeDetail."Source Type" = TimeDetail."Source Type"::Journal then begin
-                    JobJournalLine.Get(TimeDetail."Journal Template Name", TimeDetail."Journal Batch Name", TimeDetail."Journal Line No.");
+                if Rec."Source Type" = Rec."Source Type"::Journal then begin
+                    JobJournalLine.Get(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Journal Line No.");
                     JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Rejected;
                     JobJournalLine.Modify();
+                    Rec."Approval Status" := Rec."Approval Status"::Rejected;
+                    Rec.Modify();
                 end;
-            until TimeDetail.Next() = 0;
+            until Rec.Next() = 0;
 
         Rec.SetView(SavedFilters);
         CurrPage.Update(false);
@@ -193,7 +193,6 @@ page 99011 "ATP TT Time Day Detail"
         JobJournalLine: Record "Job Journal Line";
         SavedFilters: Text;
     begin
-        SavedFilters := Rec.GetView();
         CurrPage.SetSelectionFilter(Rec);
         if Rec.FindSet() then
             repeat
@@ -201,10 +200,12 @@ page 99011 "ATP TT Time Day Detail"
                     JobJournalLine.Get(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Journal Line No.");
                     JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Approved;
                     JobJournalLine.Modify();
+                    Rec."Approval Status" := Rec."Approval Status"::Approved;
+                    Rec.Modify();
                 end;
             until Rec.Next() = 0;
 
-        Rec.SetView(SavedFilters);
+        Rec.Reset();
         CurrPage.Update(false);
     end;
 
@@ -221,6 +222,8 @@ page 99011 "ATP TT Time Day Detail"
                     JobJournalLine.Get(Rec."Journal Template Name", Rec."Journal Batch Name", Rec."Journal Line No.");
                     JobJournalLine."Approval Status" := JobJournalLine."Approval Status"::Rejected;
                     JobJournalLine.Modify();
+                    Rec."Approval Status" := Rec."Approval Status"::Rejected;
+                    Rec.Modify();
                 end;
             until Rec.Next() = 0;
 

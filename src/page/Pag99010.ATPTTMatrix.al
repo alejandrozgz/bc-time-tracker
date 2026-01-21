@@ -1,6 +1,6 @@
-page 99010 "ATP TT Time Matrix"
+page 99010 "ATP TT Matrix"
 {
-    Caption = 'Time Matrix';
+    Caption = 'Time Tracker Matrix';
     PageType = Worksheet;
     SourceTable = Resource;
     ApplicationArea = All;
@@ -858,14 +858,12 @@ page 99010 "ATP TT Time Matrix"
         case ViewBy of
             ViewBy::Day:
                 begin
-                    // Detalle por día
                     TimeMgt.OpenDayDetail(Rec."No.", FromDate);
                 end;
             ViewBy::Week,
             ViewBy::Month,
             ViewBy::Year:
                 begin
-                    // Detalle por rango [FromDate..ToDate]
                     TimeMgt.OpenPeriodDetail(Rec."No.", FromDate, ToDate);
                 end;
         end;

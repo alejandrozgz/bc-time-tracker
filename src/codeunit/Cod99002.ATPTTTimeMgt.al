@@ -124,6 +124,7 @@ codeunit 99002 "ATP TT Time Mgt."
                 TimeDetail."Journal Template Name" := JobJournalLine."Journal Template Name";
                 TimeDetail."Journal Batch Name" := JobJournalLine."Journal Batch Name";
                 TimeDetail."Journal Line No." := JobJournalLine."Line No.";
+                TimeDetail."Approval Status" := JobJournalLine."Approval Status";
                 TimeDetail.Insert();
             until JobJournalLine.Next() = 0;
 
@@ -154,10 +155,10 @@ codeunit 99002 "ATP TT Time Mgt."
     procedure OpenDayDetail(ResourceNo: Code[20]; DayDate: Date)
     var
         TimeDetail: Record "ATP TT Time Detail" temporary;
-        DayDetailPage: Page "ATP TT Time Day Detail";
+        DayDetailPage: Page "ATP TT Day Detail";
     begin
         BuildDayDetail(TimeDetail, ResourceNo, DayDate);
-        DayDetailPage.SetContext(ResourceNo, DayDate, TimeDetail);
+        DayDetailPage.SetContext(ResourceNo, DayDate, 0D, TimeDetail);
         DayDetailPage.RunModal();
     end;
 
@@ -193,6 +194,7 @@ codeunit 99002 "ATP TT Time Mgt."
                 TimeDetail."Journal Template Name" := JobJournalLine."Journal Template Name";
                 TimeDetail."Journal Batch Name" := JobJournalLine."Journal Batch Name";
                 TimeDetail."Journal Line No." := JobJournalLine."Line No.";
+                TimeDetail."Approval Status" := JobJournalLine."Approval Status";
                 TimeDetail.Insert();
             until JobJournalLine.Next() = 0;
 
@@ -215,6 +217,7 @@ codeunit 99002 "ATP TT Time Mgt."
                 TimeDetail."Hours" := JobLedgerEntry.Quantity;
                 TimeDetail."Source Type" := TimeDetail."Source Type"::Ledger;
                 TimeDetail."Job Ledger Entry No." := JobLedgerEntry."Entry No.";
+                TimeDetail."Approval Status" := "ATP TT Approval Status"::Approved;
                 TimeDetail.Insert();
             until JobLedgerEntry.Next() = 0;
     end;
@@ -222,11 +225,11 @@ codeunit 99002 "ATP TT Time Mgt."
     procedure OpenPeriodDetail(ResourceNo: Code[20]; FromDate: Date; ToDate: Date)
     var
         TimeDetail: Record "ATP TT Time Detail" temporary;
-        DayDetailPage: Page "ATP TT Time Day Detail";
+        DayDetailPage: Page "ATP TT Day Detail";
     begin
         BuildPeriodDetail(TimeDetail, ResourceNo, FromDate, ToDate);
         // Usamos FromDate solo como contexto, la página realmente muestra todo el buffer
-        DayDetailPage.SetContext(ResourceNo, FromDate, TimeDetail);
+        DayDetailPage.SetContext(ResourceNo, FromDate, 0D, TimeDetail);
         DayDetailPage.RunModal();
     end;
 }
